@@ -53,7 +53,7 @@ explained here: [Management Plugin](https://www.rabbitmq.com/management.html)
   The "Sender" sends a text message to the QUEUE, and the "Receiver" consumes it.
   
   ## Work Queues
-  This example is based on the example from [Java Yutorial - Work Queues](https://www.rabbitmq.com/tutorials/tutorial-two-java.html)
+  This example is based on the example from [Java Tutorial - Work Queues](https://www.rabbitmq.com/tutorials/tutorial-two-java.html)
   , but with many changes.
   
    * We are reusing the same *Sender* implemented for the previous example.
@@ -68,8 +68,7 @@ explained here: [Management Plugin](https://www.rabbitmq.com/management.html)
     * Reassigned of tasks when some of the consumers fails.
     
 ## Publish/Subscribe
-This example os based on [this one](https://www.rabbitmq.com/tutorials/tutorial-three-java.html), but with some changes in the
-classes involved, like:
+This example is based on the example from Java [Tutorial - Publich/Subscribe](https://www.rabbitmq.com/tutorials/tutorial-three-java.html) , but with some changes:
  * The consumers are now declared in independent classes, as opposed to using anonymous classes.
  * There is one sender, *LogSender*, and 2 different consumer (although they do the same thing), *LogConsumer1* and 
  *LogConsumer2*. The *LogReceiver* class (is that a good name?) takes care of creating one specifif queue for each 
