@@ -22,7 +22,7 @@ public class PublishSubscribeTest {
         LogReceiver logReceiver = new LogReceiver();
         logReceiver.setupConsumers();
 
-        // We set up the SignalSender and start sending logs like crazy.....
+        // We set up the SignalSenderTopic and start sending logs like crazy.....
         LogSender logSender = new LogSender();
         for (int i = 0; i < NUM_LOGS; i++) logSender.sendLog("dummyLog-" + i);
 
