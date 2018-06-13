@@ -68,7 +68,7 @@ explained here: [Management Plugin](https://www.rabbitmq.com/management.html)
     * Reassigned of tasks when some of the consumers fails.
     
 ## Publish/Subscribe
-This example is based on the example from Java [Tutorial - Publich/Subscribe](https://www.rabbitmq.com/tutorials/tutorial-three-java.html) , but with some changes:
+This example is based on the example from Java [Tutorial - Publish/Subscribe](https://www.rabbitmq.com/tutorials/tutorial-three-java.html) , but with some changes:
  * The consumers are now declared in independent classes, as opposed to using anonymous classes.
  * There is one sender, *LogSender*, and 2 different consumer (although they do the same thing), *LogConsumer1* and 
  *LogConsumer2*. The *LogReceiver* class (is that a good name?) takes care of creating one specifif queue for each 
