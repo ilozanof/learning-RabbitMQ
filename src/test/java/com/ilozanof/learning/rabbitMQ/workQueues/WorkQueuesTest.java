@@ -42,7 +42,7 @@ public class WorkQueuesTest {
 
 
     // Convenience Method.
-    // It sends an specified mumebr of messags to the Queue, to be processed later by Workers..
+    // It sends an specified number of messages to the Queue, to be processed later by Workers..
     public void runSender(int numTasks) throws Exception {
         Sender sender = null;
         try {
@@ -82,7 +82,7 @@ public class WorkQueuesTest {
                 logger.debug("Waiting for workers to finish...");
                 waitForWorkers(workers);
 
-                // We check how many task are left to do...
+                // We check how many tasks are left to do...
                 numFinishedTasks = (int) workers.stream().collect(Collectors.summingInt(w -> w.getNumTasksProcessed()));
             } while (numFinishedTasks < numTasks);
 

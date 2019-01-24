@@ -19,13 +19,13 @@ explained here: [Management Plugin](https://www.rabbitmq.com/management.html)
  
  To enable the *Management Console* (before running the server), run this command:
  
- ``rabbitmq-plugins enable rabbitmq_management``
+ `rabbitmq-plugins enable rabbitmq_management`
  
  ## Start and stop the Server
  
  After enabling the *Management Console* we can run the server now:
  
- ``rabbitmq-server``
+ `rabbitmq-server`
  
 . Now we can access the web console with a web browser:
   * url: **http://localhost:15672**
@@ -34,15 +34,15 @@ explained here: [Management Plugin](https://www.rabbitmq.com/management.html)
  
  According to the Official documentation, To stop the server run this command:
  
- ``rabbitmq-server stop``
+ `rabbitmq-server stop`
  
  but it sometimes triggers the error "ERROR: node with name 'rabbit' already 
  running on 'localhost'". If that's the case, try running this command instead:
  
- ``rabbitmqctl stop``
+ `rabbitmqctl stop`
  
  
-  ## HelloWord example
+## HelloWord example
   
   > * main classes: *src/main/java/com/ilozanof/learning/rabbitMQ/helloWorld*
   > * test classes: *src/test/java/com/ilozanof/learning/rabbitMQ/helloWorld*
@@ -66,19 +66,22 @@ explained here: [Management Plugin](https://www.rabbitmq.com/management.html)
    * We are reusing the same *Sender* implemented for the previous example.
    * A new *Worker" has been developed, which is an evolved version of the *Receiver* class from the preivous example. 
    In this case, the *Worker* can be parametrized to:
-        * perform auto acknowledge or not
-        * keep track of the numbner opf tasks done
-        * simulate an error throwing an Exception, based on a value in the Constructor.
+   
+       * perform auto acknowledge or not
+       * keep track of the numbner opf tasks done
+       * simulate an error throwing an Exception, based on a value in the Constructor.
         
-  The Test in *src/test/main/com/ilozanof/learning/rabbitMQ/workQueues" checks different scenearios, like:
-    * round-robin task assignment performed by *RabbgitMQ*
-    * Reassigned of tasks when some of the consumers fails.
+  The Test in `src/test/main/com/ilozanof/learning/rabbitMQ/workQueues' checks different scenearios, like:
+  
+   * round-robin task assignment performed by *RabbgitMQ*
+   * Reassigned of tasks when some of the consumers fails.
     
 ## Publish/Subscribe
 > * main classes: *src/main/java/com/ilozanof/learning/rabbitMQ/publishSubscribe*
 > * test classes: *src/test/java/com/ilozanof/learning/rabbitMQ/publishSubscribe*
   
 This example is based on the example from Java [Tutorial - Publish/Subscribe](https://www.rabbitmq.com/tutorials/tutorial-three-java.html) , but with some changes:
+
  * The consumers are now declared in independent classes, as opposed to using anonymous classes.
  * There is one sender, *LogSender*, and 2 different consumer (although they do the same thing), *LogConsumer1* and 
  *LogConsumer2*. The *LogReceiver* class (is that a good name?) takes care of creating one specifif queue for each 
@@ -87,7 +90,8 @@ This example is based on the example from Java [Tutorial - Publish/Subscribe](ht
 
 ## About the *Topic* and *Headers* examples
 Both *Topic* and *Headers* examples represent the same scenario:
-* We have a Signal broadcast system, wo a *Sender* can send signals to different *systems* (like applications), and 
+
+* We have a Signal broadcast system, where a *Sender* can send signals to different *systems* (like applications), and 
 each system can "live" i a different *environment* (like "test", "dev", or "prod").
 * We have one *queue* for each *environment*, and the name of the *queue* is the name of the 
 enviroment, so we have the queues *test*, *dev* and *prod*.
@@ -98,7 +102,7 @@ The *Topic* and *Headers* examples further down test how to send signal to those
 signal are redirected to the right queue. The difference is in *HOW* to redirect the 
 signals, by using the *routingKey* and patterns (*Topics* example), or by using *Headers* (*Headers* example).
 
-Due to the fact that the functionality in both examples is similar, they both share some common classes/inrterfaces, defined in 
+Due to the fact that the functionality in both examples is similar, they both share some common classes/interfaces, defined in 
 the *common* package.
 
 
@@ -109,6 +113,43 @@ the *common* package.
 ### Headers example
 > * main classes: *src/main/java/com/ilozanof/learning/rabbitMQ/headers*
 > * test classes: *src/test/java/com/ilozanof/learning/rabbitMQ/headers*
+
+
+## RabbitMQ and Spring-boot AQMP integration
+So far,the examples provided are Java standalone-classes, making use of the _rabbitMQ_ Java API. 
+
+Now, we are going to develop a _SPring_ applicationn, where we'll develop the same examples as before, but making use of the abstraction provided by _Spring_.
+
+
+### topic example
+
+In this example, we are publicshing and consuming messages using a _Topic_. The connection to the _RabbitMQ_ server is declared in the main class a _Configuration_ class can be also used, maybe even better in that case)
+
+In this case, the Receiver is implemented in a complete separate class, which is not RabbitMQ-aware at all, it only provides the business logic to process the message. This class si _binded_ to the queue un the main class (or in a _Configuration_ class, as we mentioned).
+
+The Consumer is implemented by a _CommandRunner_, which is a _Spring_ interface that is executed right after the main class is executed, so we can put some initilization code there. In this case we do it here, instead of sending the messages to the Queue in the test. This way, we only have to run the Tests, and the messages will be automatically sent after the main application starts.
+
+### topic-multiple example
+
+This example is similar to the previous one, with some differences:
+
+ * We are using more than one Queue, and one _topic_ exchange that forward the messages to them accordingly.
+ * The _Consumer/Receiver_ is implemented ina a seaprate class, same as in the previous example, but the class is not _binded_ during the initilization process in the main class, instead we use some specific _spring_ annotations in that class (@RabbitListener), so during strting this calss is automatically registered as the consumer for the Queue declared in the same annotation.
+
+
+### Scaling Consumer dinamically
+
+This example shows how we can change the number of Threads used by the _MessageListenerContainer_ and how the performance is affected.
+
+> NOTE: Check out the tutorial on this page: [Queue Consumer Scaling with AMQP](https://www.relationshipone.com/blog/queue-consumer-scaling-amqp/). This example is based on tht wor, but with some small changes to it.
+
+
+In my first attempt, I tried using the default implementation _SimpleMessageListenerContainer_, changin the number of threads by invoking the method _setConcurrentConsumers_, but I came accross some problems: As it happends, the ListenerContainer defined with a @Bean method in the @springApplication is managed by the _Spring Lifecycle_, which means that the Container is started/stopped automaticaly by Spring when needed. This is great, since we only have to delare the bean, and starting and stopping operation are automatically managed. But on the other hand, in this case calling the _setConcurrentConsumers_ won´t make anny effect most of the time, because that method only orjs if the lsitener is _ACtive_ at that time, and i fond out that most of the times it's not. 
+
+So in order to be able to raise or low the number of threads, we need to take control over _when_ the _listenerContainer_ is started or stopped. and in order to do that, we need to take that component *out* of the _Spring lifecyle_. To do that, we need to:
+
+ * We define a _@Bean_ method in the _@SpringApplication_ that returns NOT a class instance, but a _List_ of _Scalablecontainers_. So each one of the containers in that list (even if there is only one) are not managed by _Spring_.
+ * As a consequence of the point above, we need to _Start_ and _Stop_ the _ScalableContiners: in our app. We start them in a _@EventListener_ method, and we stop them in a _@PreDestroy_ method. **NOTE: If we use a @PostConstruct method to start the ScalableContainers it won´t Work, since that point in time is still to early, the rest of components (queues, exchanges, etc) are not created yet.**
 
 
 
